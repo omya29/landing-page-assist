@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Playfair Display', 'serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,6 +61,24 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        campus: {
+          blue: "hsl(var(--campus-blue))",
+          teal: "hsl(var(--campus-teal))",
+          dark: "hsl(var(--campus-dark))",
+          gray: "hsl(var(--campus-gray))",
+        },
+        badge: {
+          civil: "hsl(var(--badge-civil))",
+          comp: "hsl(var(--badge-comp))",
+          mba: "hsl(var(--badge-mba))",
+          mech: "hsl(var(--badge-mech))",
+        },
+        event: {
+          official: "hsl(var(--event-official))",
+          sports: "hsl(var(--event-sports))",
+          academic: "hsl(var(--event-academic))",
+          cultural: "hsl(var(--event-cultural))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -65,25 +87,27 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "fade-in": {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-in-right": {
+          from: { transform: "translateX(100%)" },
+          to: { transform: "translateX(0)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.3s ease-out",
+        "slide-in-right": "slide-in-right 0.3s ease-out",
       },
     },
   },
