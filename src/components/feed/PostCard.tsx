@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
 import { useAuth } from "@/contexts/AuthContext";
@@ -108,15 +109,22 @@ export function PostCard({ post, onUpdate }: PostCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage src={profile?.avatar_url || undefined} />
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {profile?.full_name ? getInitials(profile.full_name) : "U"}
-              </AvatarFallback>
-            </Avatar>
+            <Link to={`/profile/${post.user_id}`}>
+              <Avatar className="hover:ring-2 hover:ring-primary transition-all">
+                <AvatarImage src={profile?.avatar_url || undefined} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {profile?.full_name ? getInitials(profile.full_name) : "U"}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold">{profile?.full_name || "Anonymous"}</span>
+                <Link 
+                  to={`/profile/${post.user_id}`}
+                  className="font-semibold hover:text-primary transition-colors"
+                >
+                  {profile?.full_name || "Anonymous"}
+                </Link>
                 {profile?.department && (
                   <Badge
                     variant="secondary"

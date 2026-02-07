@@ -15,6 +15,9 @@ import Events from "./pages/Events";
 import Communities from "./pages/Communities";
 import Notifications from "./pages/Notifications";
 import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
+import Messages from "./pages/Messages";
+import Chat from "./pages/Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,9 +36,13 @@ const App = () => (
             <Route path="/feed" element={<Feed />} />
             <Route path="/posts/new" element={<CreatePost />} />
             <Route path="/events" element={<Events />} />
+            <Route path="/events/:eventId" element={<Events />} />
             <Route path="/communities" element={<Communities />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/profile/:userId" element={<Profile />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/messages/:conversationId" element={<Chat />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
