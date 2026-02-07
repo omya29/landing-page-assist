@@ -8,7 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Droplets, Loader2 } from "lucide-react";
+import { Loader2, GraduationCap, BookOpen } from "lucide-react";
+import collegeLogo from "@/assets/college-logo.jpg";
+
+type UserRole = "student" | "professor";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -18,6 +21,8 @@ export default function Auth() {
   const [fullName, setFullName] = useState("");
   const [department, setDepartment] = useState("");
   const [year, setYear] = useState("");
+  const [subject, setSubject] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("student");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +46,7 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -54,7 +59,39 @@ export default function Auth() {
 
     if (error) {
       toast.error(error.message);
-    } else {
+      setLoading(false);
+      return;
+    }
+
+    // Update profile with additional data
+    if (data.user) {
+      const profileData: Record<string, string | null> = {
+        department,
+        role: selectedRole,
+      };
+
+      if (selectedRole === "student") {
+        profileData.year = year;
+      } else {
+        profileData.subject = subject;
+      }
+
+      // Wait a bit for the trigger to create the profile
+      setTimeout(async () => {
+        await supabase
+          .from("profiles")
+          .update(profileData)
+          .eq("id", data.user!.id);
+
+        // If professor, update user_roles table
+        if (selectedRole === "professor") {
+          await supabase.from("user_roles").upsert({
+            user_id: data.user!.id,
+            role: "professor",
+          });
+        }
+      }, 1000);
+
       toast.success("Check your email to confirm your account!");
     }
     setLoading(false);
@@ -65,9 +102,11 @@ export default function Auth() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
-            <Droplets className="w-7 h-7 text-primary-foreground" />
-          </div>
+          <img 
+            src={collegeLogo} 
+            alt="College Logo" 
+            className="w-14 h-14 rounded-xl object-cover shadow-md"
+          />
           <div>
             <h1 className="text-xl font-bold text-foreground">Samarth COE & M</h1>
             <p className="text-xs text-muted-foreground">BELHE, PUNE</p>
@@ -127,9 +166,42 @@ export default function Auth() {
 
               <TabsContent value="signup" className="mt-0">
                 <CardTitle className="text-xl mb-2">Join Samarth Connect</CardTitle>
-                <CardDescription className="mb-6">
+                <CardDescription className="mb-4">
                   Create your account to connect with fellow Samarthians
                 </CardDescription>
+
+                {/* Role Selection */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRole("student")}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                      selectedRole === "student"
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <GraduationCap className={`h-8 w-8 ${selectedRole === "student" ? "text-primary" : "text-muted-foreground"}`} />
+                    <span className={`font-medium ${selectedRole === "student" ? "text-primary" : "text-muted-foreground"}`}>
+                      Student
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRole("professor")}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                      selectedRole === "professor"
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <BookOpen className={`h-8 w-8 ${selectedRole === "professor" ? "text-primary" : "text-muted-foreground"}`} />
+                    <span className={`font-medium ${selectedRole === "professor" ? "text-primary" : "text-muted-foreground"}`}>
+                      Professor
+                    </span>
+                  </button>
+                </div>
+
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-name">Full Name</Label>
@@ -153,37 +225,52 @@ export default function Auth() {
                       required
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Department</Label>
-                      <Select value={department} onValueChange={setDepartment}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="civil">Civil</SelectItem>
-                          <SelectItem value="comp">Computer</SelectItem>
-                          <SelectItem value="mech">Mechanical</SelectItem>
-                          <SelectItem value="entc">ENTC</SelectItem>
-                          <SelectItem value="mba">MBA</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+
+                  <div className="space-y-2">
+                    <Label>Department</Label>
+                    <Select value={department} onValueChange={setDepartment} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="civil">Civil Engineering</SelectItem>
+                        <SelectItem value="comp">Computer Engineering</SelectItem>
+                        <SelectItem value="mech">Mechanical Engineering</SelectItem>
+                        <SelectItem value="entc">ENTC</SelectItem>
+                        <SelectItem value="mba">MBA</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {selectedRole === "student" ? (
                     <div className="space-y-2">
                       <Label>Year</Label>
-                      <Select value={year} onValueChange={setYear}>
+                      <Select value={year} onValueChange={setYear} required>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select" />
+                          <SelectValue placeholder="Select year" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="1st">1st Year</SelectItem>
-                          <SelectItem value="2nd">2nd Year</SelectItem>
-                          <SelectItem value="3rd">3rd Year</SelectItem>
-                          <SelectItem value="4th">4th Year</SelectItem>
+                          <SelectItem value="FE">First Year (FE)</SelectItem>
+                          <SelectItem value="SE">Second Year (SE)</SelectItem>
+                          <SelectItem value="TE">Third Year (TE)</SelectItem>
+                          <SelectItem value="BE">Final Year (BE)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-subject">Subject / Specialization</Label>
+                      <Input
+                        id="signup-subject"
+                        type="text"
+                        placeholder="e.g., Database Systems, AI/ML"
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                        required
+                      />
+                    </div>
+                  )}
+
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>
                     <Input
@@ -203,7 +290,7 @@ export default function Auth() {
                         Creating account...
                       </>
                     ) : (
-                      "Create Account"
+                      `Sign Up as ${selectedRole === "student" ? "Student" : "Professor"}`
                     )}
                   </Button>
                 </form>

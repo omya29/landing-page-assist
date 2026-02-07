@@ -1,6 +1,5 @@
-import { Bell, Search, Plus, LogOut, User } from "lucide-react";
+import { Bell, Plus, LogOut, User, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -12,10 +11,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { Droplets } from "lucide-react";
+import { UserSearch } from "@/components/search/UserSearch";
+import collegeLogo from "@/assets/college-logo.jpg";
 
 export function DashboardHeader() {
-  const { profile, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -37,9 +37,11 @@ export function DashboardHeader() {
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link to="/dashboard" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <Droplets className="w-6 h-6 text-primary-foreground" />
-          </div>
+          <img 
+            src={collegeLogo} 
+            alt="College Logo" 
+            className="w-10 h-10 rounded-xl object-cover"
+          />
           <div className="hidden sm:block">
             <h1 className="text-lg font-bold text-foreground leading-tight">
               Samarth COE & M
@@ -50,17 +52,17 @@ export function DashboardHeader() {
 
         {/* Search */}
         <div className="flex-1 max-w-xl mx-4 hidden md:block">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search students, departments, events..."
-              className="pl-10 bg-secondary/50 border-0 focus-visible:ring-1"
-            />
-          </div>
+          <UserSearch />
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          <Link to="/messages">
+            <Button variant="ghost" size="icon">
+              <MessageCircle className="h-5 w-5" />
+            </Button>
+          </Link>
+
           <Link to="/notifications">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -99,7 +101,7 @@ export function DashboardHeader() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/profile" className="cursor-pointer">
+                <Link to={user ? `/profile/${user.id}` : "/auth"} className="cursor-pointer">
                   <User className="mr-2 h-4 w-4" />
                   Profile
                 </Link>

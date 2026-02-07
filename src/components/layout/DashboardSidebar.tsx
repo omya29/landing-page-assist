@@ -6,6 +6,7 @@ import {
   Calendar,
   Users,
   Bell,
+  MessageCircle,
   Settings,
   Shield,
 } from "lucide-react";
@@ -16,6 +17,7 @@ const navigation = [
   { name: "Feed", href: "/feed", icon: Newspaper },
   { name: "Events", href: "/events", icon: Calendar },
   { name: "Communities", href: "/communities", icon: Users },
+  { name: "Messages", href: "/messages", icon: MessageCircle },
   { name: "Notifications", href: "/notifications", icon: Bell },
 ];
 
