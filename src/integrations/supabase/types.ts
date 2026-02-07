@@ -111,6 +111,53 @@ export type Database = {
           },
         ]
       }
+      conversation_participants: {
+        Row: {
+          conversation_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       event_attendees: {
         Row: {
           attended_at: string
@@ -193,6 +240,27 @@ export type Database = {
           },
         ]
       }
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string
@@ -218,6 +286,41 @@ export type Database = {
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -294,9 +397,12 @@ export type Database = {
           bio: string | null
           created_at: string
           department: string | null
+          followers_count: number
+          following_count: number
           full_name: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
+          subject: string | null
           updated_at: string
           year: string | null
         }
@@ -305,9 +411,12 @@ export type Database = {
           bio?: string | null
           created_at?: string
           department?: string | null
+          followers_count?: number
+          following_count?: number
           full_name: string
           id: string
           role?: Database["public"]["Enums"]["app_role"]
+          subject?: string | null
           updated_at?: string
           year?: string | null
         }
@@ -316,9 +425,12 @@ export type Database = {
           bio?: string | null
           created_at?: string
           department?: string | null
+          followers_count?: number
+          following_count?: number
           full_name?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          subject?: string | null
           updated_at?: string
           year?: string | null
         }
@@ -360,6 +472,10 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_community_member: {
         Args: { _community_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_conversation_participant: {
+        Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
     }
