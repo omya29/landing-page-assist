@@ -361,6 +361,7 @@ export type Database = {
       posts: {
         Row: {
           comments_count: number
+          community_id: string | null
           content: string
           created_at: string
           hashtags: string[] | null
@@ -371,6 +372,7 @@ export type Database = {
         }
         Insert: {
           comments_count?: number
+          community_id?: string | null
           content: string
           created_at?: string
           hashtags?: string[] | null
@@ -381,6 +383,7 @@ export type Database = {
         }
         Update: {
           comments_count?: number
+          community_id?: string | null
           content?: string
           created_at?: string
           hashtags?: string[] | null
@@ -389,7 +392,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "posts_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
