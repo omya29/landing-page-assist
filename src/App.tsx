@@ -13,6 +13,7 @@ import Feed from "./pages/Feed";
 import CreatePost from "./pages/CreatePost";
 import Events from "./pages/Events";
 import Communities from "./pages/Communities";
+import CommunityDetail from "./pages/CommunityDetail";
 import Notifications from "./pages/Notifications";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/events/:eventId" element={<Events />} />
             <Route path="/communities" element={<Communities />} />
+            <Route path="/communities/:communityId" element={<CommunityDetail />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/profile/:userId" element={<Profile />} />
