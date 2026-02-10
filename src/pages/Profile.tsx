@@ -171,11 +171,15 @@ export default function ProfilePage() {
       return;
     }
 
-    // Add participants
-    await supabase.from("conversation_participants").insert([
-      { conversation_id: newConversation.id, user_id: user.id },
-      { conversation_id: newConversation.id, user_id: userId },
-    ]);
+    // Add self first (satisfies RLS), then add the other user
+    await supabase.from("conversation_participants").insert({
+      conversation_id: newConversation.id,
+      user_id: user.id,
+    });
+    await supabase.from("conversation_participants").insert({
+      conversation_id: newConversation.id,
+      user_id: userId!,
+    });
 
     navigate(`/messages/${newConversation.id}`);
   };
