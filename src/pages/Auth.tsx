@@ -237,6 +237,8 @@ export default function Auth() {
                         <SelectItem value="comp">Computer Engineering</SelectItem>
                         <SelectItem value="mech">Mechanical Engineering</SelectItem>
                         <SelectItem value="entc">ENTC</SelectItem>
+                        <SelectItem value="electrical">Electrical Engineering</SelectItem>
+                        <SelectItem value="aids">AI & Data Science</SelectItem>
                         <SelectItem value="mba">MBA</SelectItem>
                       </SelectContent>
                     </Select>
