@@ -159,29 +159,43 @@ export default function ProfilePage() {
       }
     }
 
-    // Create new conversation
-    const { data: newConversation, error } = await supabase
+    // Create new conversation - generate ID client-side to avoid SELECT policy issue
+    const conversationId = crypto.randomUUID();
+    
+    const { error } = await supabase
       .from("conversations")
-      .insert({})
-      .select()
-      .single();
+      .insert({ id: conversationId });
 
     if (error) {
-      toast.error("Failed to start conversation");
+      console.error("Failed to create conversation:", error);
+      toast.error("Failed to start conversation. Please try again.");
       return;
     }
 
     // Add self first (satisfies RLS), then add the other user
-    await supabase.from("conversation_participants").insert({
-      conversation_id: newConversation.id,
+    const { error: selfError } = await supabase.from("conversation_participants").insert({
+      conversation_id: conversationId,
       user_id: user.id,
     });
-    await supabase.from("conversation_participants").insert({
-      conversation_id: newConversation.id,
+
+    if (selfError) {
+      console.error("Failed to add self to conversation:", selfError);
+      toast.error("Failed to start conversation");
+      return;
+    }
+
+    const { error: otherError } = await supabase.from("conversation_participants").insert({
+      conversation_id: conversationId,
       user_id: userId!,
     });
 
-    navigate(`/messages/${newConversation.id}`);
+    if (otherError) {
+      console.error("Failed to add other user to conversation:", otherError);
+      toast.error("Failed to start conversation");
+      return;
+    }
+
+    navigate(`/messages/${conversationId}`);
   };
 
   const getInitials = (name: string) => {
