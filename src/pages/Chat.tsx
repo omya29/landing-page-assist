@@ -18,6 +18,7 @@ interface Message {
   sender_id: string;
   created_at: string;
   is_read: boolean;
+  image_url?: string | null;
 }
 
 interface OtherUser {
