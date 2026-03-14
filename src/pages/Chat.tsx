@@ -7,9 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ArrowLeft, Send, Loader2 } from "lucide-react";
+import { ArrowLeft, Send, Loader2, ImagePlus, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useImageUpload } from "@/hooks/use-image-upload";
 
 interface Message {
   id: string;
@@ -17,6 +18,7 @@ interface Message {
   sender_id: string;
   created_at: string;
   is_read: boolean;
+  image_url?: string | null;
 }
 
 interface OtherUser {
@@ -36,6 +38,11 @@ export default function Chat() {
   const [sending, setSending] = useState(false);
   const [otherUser, setOtherUser] = useState<OtherUser | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const { preview, handleFileSelect, upload, clear, uploading } = useImageUpload({
+    bucket: "message-images",
+    maxSizeMB: 5,
+  });
 
   useEffect(() => {
     if (user && conversationId) {
@@ -128,17 +135,29 @@ export default function Chat() {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !conversationId || !newMessage.trim()) return;
+    if (!user || !conversationId || (!newMessage.trim() && !preview)) return;
 
     setSending(true);
+
+    let imageUrl: string | null = null;
+    if (preview) {
+      imageUrl = await upload(user.id);
+      if (!imageUrl && preview) {
+        setSending(false);
+        return;
+      }
+    }
+
     const { error } = await supabase.from("messages").insert({
       conversation_id: conversationId,
       sender_id: user.id,
-      content: newMessage.trim(),
+      content: newMessage.trim() || (imageUrl ? "📷 Image" : ""),
+      image_url: imageUrl,
     });
 
     if (!error) {
       setNewMessage("");
+      clear();
     }
     setSending(false);
   };
@@ -218,6 +237,15 @@ export default function Chat() {
                       )}
                     >
                       <p className="break-words">{message.content}</p>
+                      {message.image_url && (
+                        <img
+                          src={message.image_url}
+                          alt="Shared image"
+                          className="mt-2 rounded-lg max-h-60 object-cover cursor-pointer"
+                          onClick={() => window.open(message.image_url!, "_blank")}
+                          loading="lazy"
+                        />
+                      )}
                       <p
                         className={cn(
                           "text-xs mt-1",
@@ -238,16 +266,40 @@ export default function Chat() {
 
           {/* Input */}
           <div className="border-t p-4">
+            {preview && (
+              <div className="relative inline-block mb-3">
+                <img src={preview} alt="Preview" className="h-20 rounded-lg object-cover" />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute -top-2 -right-2 h-6 w-6"
+                  onClick={clear}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
             <form onSubmit={handleSend} className="flex gap-2">
+              <label className="cursor-pointer flex items-center text-muted-foreground hover:text-foreground transition-colors">
+                <ImagePlus className="h-5 w-5" />
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
+              </label>
               <Input
                 placeholder="Type a message..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                disabled={sending}
+                disabled={sending || uploading}
                 className="flex-1"
               />
-              <Button type="submit" disabled={sending || !newMessage.trim()}>
-                {sending ? (
+              <Button type="submit" disabled={sending || uploading || (!newMessage.trim() && !preview)}>
+                {sending || uploading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   <Send className="h-5 w-5" />

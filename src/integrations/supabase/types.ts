@@ -296,6 +296,7 @@ export type Database = {
           conversation_id: string
           created_at: string
           id: string
+          image_url: string | null
           is_read: boolean
           sender_id: string
         }
@@ -304,6 +305,7 @@ export type Database = {
           conversation_id: string
           created_at?: string
           id?: string
+          image_url?: string | null
           is_read?: boolean
           sender_id: string
         }
@@ -312,6 +314,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           is_read?: boolean
           sender_id?: string
         }
@@ -366,6 +369,7 @@ export type Database = {
           created_at: string
           hashtags: string[] | null
           id: string
+          image_url: string | null
           likes_count: number
           updated_at: string
           user_id: string
@@ -377,6 +381,7 @@ export type Database = {
           created_at?: string
           hashtags?: string[] | null
           id?: string
+          image_url?: string | null
           likes_count?: number
           updated_at?: string
           user_id: string
@@ -388,6 +393,7 @@ export type Database = {
           created_at?: string
           hashtags?: string[] | null
           id?: string
+          image_url?: string | null
           likes_count?: number
           updated_at?: string
           user_id?: string
