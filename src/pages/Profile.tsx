@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Tables } from "@/integrations/supabase/types";
@@ -11,7 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PostCard } from "@/components/feed/PostCard";
 import { FollowList } from "@/components/profile/FollowList";
-import { Loader2, MessageCircle, UserPlus, UserMinus, GraduationCap, BookOpen } from "lucide-react";
+import { Loader2, MessageCircle, UserPlus, UserMinus, GraduationCap, BookOpen, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
