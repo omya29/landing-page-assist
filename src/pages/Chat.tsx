@@ -38,6 +38,11 @@ export default function Chat() {
   const [sending, setSending] = useState(false);
   const [otherUser, setOtherUser] = useState<OtherUser | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const { preview, handleFileSelect, upload, clear, uploading } = useImageUpload({
+    bucket: "message-images",
+    maxSizeMB: 5,
+  });
 
   useEffect(() => {
     if (user && conversationId) {
