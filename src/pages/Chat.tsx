@@ -135,17 +135,29 @@ export default function Chat() {
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !conversationId || !newMessage.trim()) return;
+    if (!user || !conversationId || (!newMessage.trim() && !preview)) return;
 
     setSending(true);
+
+    let imageUrl: string | null = null;
+    if (preview) {
+      imageUrl = await upload(user.id);
+      if (!imageUrl && preview) {
+        setSending(false);
+        return;
+      }
+    }
+
     const { error } = await supabase.from("messages").insert({
       conversation_id: conversationId,
       sender_id: user.id,
-      content: newMessage.trim(),
+      content: newMessage.trim() || (imageUrl ? "📷 Image" : ""),
+      image_url: imageUrl,
     });
 
     if (!error) {
       setNewMessage("");
+      clear();
     }
     setSending(false);
   };
