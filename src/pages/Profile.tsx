@@ -200,6 +200,49 @@ export default function ProfilePage() {
     navigate(`/messages/${conversationId}`);
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !isOwnProfile) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be less than 2MB");
+      return;
+    }
+
+    setAvatarUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(path, file);
+
+    if (uploadError) {
+      toast.error("Failed to upload avatar");
+      setAvatarUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ avatar_url: data.publicUrl })
+      .eq("id", user.id);
+
+    if (updateError) {
+      toast.error("Failed to update profile");
+    } else {
+      setProfile((prev) => prev ? { ...prev, avatar_url: data.publicUrl } : null);
+      toast.success("Avatar updated!");
+    }
+    setAvatarUploading(false);
+  };
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
