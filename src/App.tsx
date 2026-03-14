@@ -46,6 +46,7 @@ const App = () => (
             <Route path="/profile/:userId" element={<Profile />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/messages/:conversationId" element={<Chat />} />
+            <Route path="/settings" element={<Settings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
