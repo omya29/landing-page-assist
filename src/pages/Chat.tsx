@@ -237,6 +237,15 @@ export default function Chat() {
                       )}
                     >
                       <p className="break-words">{message.content}</p>
+                      {message.image_url && (
+                        <img
+                          src={message.image_url}
+                          alt="Shared image"
+                          className="mt-2 rounded-lg max-h-60 object-cover cursor-pointer"
+                          onClick={() => window.open(message.image_url!, "_blank")}
+                          loading="lazy"
+                        />
+                      )}
                       <p
                         className={cn(
                           "text-xs mt-1",
