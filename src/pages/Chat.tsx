@@ -266,16 +266,40 @@ export default function Chat() {
 
           {/* Input */}
           <div className="border-t p-4">
+            {preview && (
+              <div className="relative inline-block mb-3">
+                <img src={preview} alt="Preview" className="h-20 rounded-lg object-cover" />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute -top-2 -right-2 h-6 w-6"
+                  onClick={clear}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
             <form onSubmit={handleSend} className="flex gap-2">
+              <label className="cursor-pointer flex items-center text-muted-foreground hover:text-foreground transition-colors">
+                <ImagePlus className="h-5 w-5" />
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                />
+              </label>
               <Input
                 placeholder="Type a message..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                disabled={sending}
+                disabled={sending || uploading}
                 className="flex-1"
               />
-              <Button type="submit" disabled={sending || !newMessage.trim()}>
-                {sending ? (
+              <Button type="submit" disabled={sending || uploading || (!newMessage.trim() && !preview)}>
+                {sending || uploading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   <Send className="h-5 w-5" />
