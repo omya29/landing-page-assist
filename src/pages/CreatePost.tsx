@@ -7,14 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, Send, ArrowLeft } from "lucide-react";
+import { Loader2, Send, ArrowLeft, ImagePlus, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useImageUpload } from "@/hooks/use-image-upload";
 
 export default function CreatePost() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const { preview, handleFileSelect, upload, clear, uploading } = useImageUpload({
+    bucket: "post-images",
+    maxSizeMB: 5,
+  });
 
   const extractHashtags = (text: string): string[] => {
     const matches = text.match(/#(\w+)/g);
@@ -28,10 +33,20 @@ export default function CreatePost() {
     setLoading(true);
     const hashtags = extractHashtags(content);
 
+    let imageUrl: string | null = null;
+    if (preview) {
+      imageUrl = await upload(user.id);
+      if (!imageUrl && preview) {
+        setLoading(false);
+        return;
+      }
+    }
+
     const { error } = await supabase.from("posts").insert({
       user_id: user.id,
       content: content.trim(),
       hashtags: hashtags.length > 0 ? hashtags : null,
+      image_url: imageUrl,
     });
 
     if (error) {
@@ -68,15 +83,47 @@ export default function CreatePost() {
                 className="resize-none"
                 maxLength={1000}
               />
+
+              {/* Image preview */}
+              {preview && (
+                <div className="relative inline-block">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="max-h-64 rounded-lg object-cover"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2 h-7 w-7"
+                    onClick={clear}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  {content.length}/1000 characters
-                </span>
-                <Button type="submit" disabled={loading || !content.trim()}>
-                  {loading ? (
+                <div className="flex items-center gap-3">
+                  <label className="cursor-pointer text-muted-foreground hover:text-foreground transition-colors">
+                    <ImagePlus className="h-5 w-5" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileSelect}
+                    />
+                  </label>
+                  <span className="text-sm text-muted-foreground">
+                    {content.length}/1000 characters
+                  </span>
+                </div>
+                <Button type="submit" disabled={loading || uploading || !content.trim()}>
+                  {loading || uploading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Publishing...
+                      {uploading ? "Uploading..." : "Publishing..."}
                     </>
                   ) : (
                     <>
