@@ -9,10 +9,9 @@ import campusEntrance from "@/assets/campus-entrance.jpg";
 import collegeGate from "@/assets/college-gate.jpeg";
 import studentsGroup from "@/assets/students-group.jpg";
 import studentsGossiping from "@/assets/students-gossiping.jpg";
-import engineeringGate from "@/assets/engineering-gate.jpg";
 
-const backgrounds = [campusEntrance, studentsGossiping, collegeGate, studentsGroup, engineeringGate];
-const thumbnails = [studentsGossiping, studentsGroup, collegeGate, engineeringGate];
+const backgrounds = [campusEntrance, studentsGossiping, collegeGate, studentsGroup];
+const thumbnails = [studentsGossiping, studentsGroup, collegeGate, campusEntrance];
 
 const Index = () => {
   const navigate = useNavigate();
