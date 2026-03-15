@@ -1,148 +1,231 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Users, Calendar, MessageSquare } from "lucide-react";
-import collegeLogo from "@/assets/college-logo.jpg";
+import { Button } from "@/components/ui/button";
+
 import campusEntrance from "@/assets/campus-entrance.jpg";
+import collegeGate from "@/assets/college-gate.jpeg";
+import studentsGroup from "@/assets/students-group.jpg";
+import collegeUniform from "@/assets/college-uniform.jpg";
+import engineeringGate from "@/assets/engineering-gate.jpg";
+
+const backgrounds = [campusEntrance, studentsGroup, collegeGate, collegeUniform, engineeringGate];
+const thumbnails = [collegeUniform, studentsGroup, collegeGate, engineeringGate];
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
+  const [currentBg, setCurrentBg] = useState(0);
 
-  const handleGetStarted = () => {
-    if (user) {
-      navigate("/dashboard");
-    } else {
-      navigate("/auth");
-    }
+  const nextBg = useCallback(() => {
+    setCurrentBg((prev) => (prev + 1) % backgrounds.length);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(nextBg, 5000);
+    return () => clearInterval(interval);
+  }, [nextBg]);
+
+  const handleExplore = () => {
+    navigate(user ? "/dashboard" : "/auth");
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <img 
-              src={collegeLogo} 
-              alt="SCOE&M Logo" 
-              className="h-12 w-12 rounded-full object-cover"
-            />
-            <div>
-              <h1 className="text-lg font-bold text-primary">SCOE&M</h1>
-              <p className="text-xs text-muted-foreground">Campus Connect</p>
-            </div>
-          </div>
-          <Button onClick={handleGetStarted}>
-            {user ? "Dashboard" : "Sign In"}
-          </Button>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src={campusEntrance} 
-            alt="Samarth Group Campus" 
-            className="h-full w-full object-cover opacity-20"
+      {/* Hero - Full viewport */}
+      <section className="relative h-screen w-full overflow-hidden">
+        {/* Sliding backgrounds */}
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={currentBg}
+            src={backgrounds[currentBg]}
+            alt="Campus"
+            className="absolute inset-0 h-full w-full object-cover"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
-        </div>
-        
-        <div className="container relative z-10 mx-auto px-4 py-20 md:py-32">
-          <div className="mx-auto max-w-3xl text-center">
-            <img 
-              src={collegeLogo} 
-              alt="Samarth College of Engineering & Management" 
-              className="mx-auto mb-8 h-32 w-32 rounded-full bg-white p-2 shadow-lg"
-            />
-            <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
-              Samarth College of{" "}
-              <span className="text-primary">Engineering & Management</span>
-            </h1>
-            <p className="mb-8 text-lg text-muted-foreground md:text-xl">
-              Your digital campus hub for events, communities, and student life. 
-              Stay connected with everything happening at SCOE&M.
-            </p>
-            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button size="lg" onClick={handleGetStarted} className="gap-2">
-                Get Started <ArrowRight className="h-4 w-4" />
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => navigate("/auth")}>
-                Learn More
-              </Button>
-            </div>
-          </div>
+        </AnimatePresence>
+
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/50" />
+
+        {/* Floating particles */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-white/10"
+            style={{
+              width: 4 + Math.random() * 6,
+              height: 4 + Math.random() * 6,
+              left: `${15 + Math.random() * 70}%`,
+              top: `${10 + Math.random() * 80}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.6, 0.2],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 3,
+              repeat: Infinity,
+              delay: i * 0.5,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+
+        {/* Content */}
+        <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">
+          <motion.p
+            className="mb-4 text-xs font-medium uppercase tracking-[0.3em] text-white/80 md:text-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            Samarth Rural Educational Institute's
+          </motion.p>
+
+          <motion.h1
+            className="mb-2 font-display text-6xl font-bold text-white md:text-8xl lg:text-9xl"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
+          >
+            SAMARTH
+          </motion.h1>
+
+          <motion.h2
+            className="mb-2 text-2xl font-semibold text-primary md:text-3xl lg:text-4xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+          >
+            College of Engineering & Management
+          </motion.h2>
+
+          {/* Animated underline */}
+          <motion.div
+            className="mb-6 h-0.5 rounded-full bg-primary"
+            initial={{ width: 0 }}
+            animate={{ width: 120 }}
+            transition={{ delay: 1, duration: 0.8, ease: "easeOut" }}
+          />
+
+          <motion.p
+            className="mb-10 max-w-lg text-sm text-white/70 md:text-base"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.8 }}
+          >
+            Empowering Future Engineers with Excellence & Innovation
+          </motion.p>
+
+          {/* Thumbnail gallery */}
+          <motion.div
+            className="mb-10 flex gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.4, duration: 0.8 }}
+          >
+            {thumbnails.map((thumb, i) => (
+              <motion.div
+                key={i}
+                className="h-16 w-16 overflow-hidden rounded-xl border-2 border-white/20 shadow-lg backdrop-blur-sm md:h-20 md:w-20"
+                whileHover={{ scale: 1.15, borderColor: "rgba(255,255,255,0.6)" }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <img
+                  src={thumb}
+                  alt={`Campus life ${i + 1}`}
+                  className="h-full w-full object-cover"
+                />
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Explore Campus button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.6, duration: 0.8 }}
+          >
+            <Button
+              size="lg"
+              onClick={handleExplore}
+              className="gap-3 rounded-full bg-primary px-10 py-6 text-lg font-semibold text-primary-foreground shadow-2xl shadow-primary/30 transition-all hover:scale-105 hover:shadow-primary/50"
+            >
+              Explore Campus <ArrowRight className="h-5 w-5" />
+            </Button>
+          </motion.div>
+
+          {/* Dot indicators */}
+          <motion.div
+            className="mt-8 flex gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.8 }}
+          >
+            {backgrounds.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentBg(i)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  i === currentBg
+                    ? "w-8 bg-primary"
+                    : "w-2 bg-white/40 hover:bg-white/60"
+                }`}
+              />
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
       <section className="border-t bg-muted/30 py-20">
         <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold">
+          <motion.h2
+            className="mb-12 text-center text-3xl font-bold text-foreground"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             Everything You Need
-          </h2>
+          </motion.h2>
           <div className="grid gap-8 md:grid-cols-3">
-            <div className="rounded-xl border bg-card p-6 text-center shadow-sm">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <Calendar className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="mb-2 text-xl font-semibold">Campus Events</h3>
-              <p className="text-muted-foreground">
-                Never miss an event. From sports to cultural fests, stay updated with all campus activities.
-              </p>
-            </div>
-            <div className="rounded-xl border bg-card p-6 text-center shadow-sm">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <Users className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="mb-2 text-xl font-semibold">Communities</h3>
-              <p className="text-muted-foreground">
-                Join clubs and communities that match your interests. Connect with like-minded peers.
-              </p>
-            </div>
-            <div className="rounded-xl border bg-card p-6 text-center shadow-sm">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-                <MessageSquare className="h-7 w-7 text-primary" />
-              </div>
-              <h3 className="mb-2 text-xl font-semibold">Student Pulse</h3>
-              <p className="text-muted-foreground">
-                Share updates, thoughts, and connect with the entire campus community in real-time.
-              </p>
-            </div>
+            {[
+              { icon: Calendar, title: "Campus Events", desc: "Never miss an event. From sports to cultural fests, stay updated with all campus activities." },
+              { icon: Users, title: "Communities", desc: "Join clubs and communities that match your interests. Connect with like-minded peers." },
+              { icon: MessageSquare, title: "Student Pulse", desc: "Share updates, thoughts, and connect with the entire campus community in real-time." },
+            ].map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                className="rounded-xl border bg-card p-6 text-center shadow-sm"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15, duration: 0.5 }}
+                whileHover={{ y: -5, boxShadow: "0 10px 30px -10px hsl(199 89% 48% / 0.2)" }}
+              >
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                  <feature.icon className="h-7 w-7 text-primary" />
+                </div>
+                <h3 className="mb-2 text-xl font-semibold text-card-foreground">{feature.title}</h3>
+                <p className="text-muted-foreground">{feature.desc}</p>
+              </motion.div>
+            ))}
           </div>
-        </div>
-      </section>
-
-      {/* Campus Image Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="overflow-hidden rounded-2xl shadow-2xl">
-            <img 
-              src={campusEntrance} 
-              alt="Samarth Group Campus Entrance" 
-              className="h-auto w-full object-cover"
-            />
-          </div>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Samarth Group of Institutions - Building Tomorrow's Leaders
-          </p>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="border-t bg-muted/50 py-8">
         <div className="container mx-auto px-4 text-center">
-          <div className="mb-4 flex items-center justify-center gap-2">
-            <img 
-              src={collegeLogo} 
-              alt="SCOE&M" 
-              className="h-8 w-8 rounded-full"
-            />
-            <span className="font-semibold text-primary">SCOE&M Campus Connect</span>
-          </div>
-          <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-primary">SCOE&M Campus Connect</span>
+          <p className="mt-2 text-sm text-muted-foreground">
             © {new Date().getFullYear()} Samarth College of Engineering & Management. All rights reserved.
           </p>
         </div>
