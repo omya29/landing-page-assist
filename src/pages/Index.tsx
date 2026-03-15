@@ -24,7 +24,7 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(nextBg, 5000);
+    const interval = setInterval(nextBg, 3000);
     return () => clearInterval(interval);
   }, [nextBg]);
 
