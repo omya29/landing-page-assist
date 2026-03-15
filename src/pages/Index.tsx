@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 import campusEntrance from "@/assets/campus-entrance.jpg";
 import collegeGate from "@/assets/college-gate.jpeg";
 import studentsGroup from "@/assets/students-group.jpg";
-import collegeUniform from "@/assets/college-uniform.jpg";
+import studentsGossiping from "@/assets/students-gossiping.jpg";
 import engineeringGate from "@/assets/engineering-gate.jpg";
 
-const backgrounds = [campusEntrance, studentsGroup, collegeGate, collegeUniform, engineeringGate];
-const thumbnails = [collegeUniform, studentsGroup, collegeGate, engineeringGate];
+const backgrounds = [campusEntrance, studentsGossiping, collegeGate, studentsGroup, engineeringGate];
+const thumbnails = [studentsGossiping, studentsGroup, collegeGate, engineeringGate];
 
 const Index = () => {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(nextBg, 5000);
+    const interval = setInterval(nextBg, 3000);
     return () => clearInterval(interval);
   }, [nextBg]);
 
