@@ -453,6 +453,54 @@ export type Database = {
         }
         Relationships: []
       }
+      resources: {
+        Row: {
+          created_at: string
+          department: string | null
+          description: string | null
+          download_count: number
+          file_size: number
+          file_type: string
+          file_url: string
+          id: string
+          subject: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          year: string | null
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          description?: string | null
+          download_count?: number
+          file_size?: number
+          file_type?: string
+          file_url: string
+          id?: string
+          subject?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          year?: string | null
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          description?: string | null
+          download_count?: number
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          id?: string
+          subject?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          year?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
