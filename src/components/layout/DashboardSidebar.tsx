@@ -5,6 +5,7 @@ import {
   Newspaper,
   Calendar,
   Users,
+  BookOpen,
   Bell,
   MessageCircle,
   Settings,
