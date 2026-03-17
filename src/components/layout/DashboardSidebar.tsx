@@ -5,6 +5,7 @@ import {
   Newspaper,
   Calendar,
   Users,
+  BookOpen,
   Bell,
   MessageCircle,
   Settings,
@@ -17,6 +18,7 @@ const navigation = [
   { name: "Feed", href: "/feed", icon: Newspaper },
   { name: "Events", href: "/events", icon: Calendar },
   { name: "Communities", href: "/communities", icon: Users },
+  { name: "Resources", href: "/resources", icon: BookOpen },
   { name: "Messages", href: "/messages", icon: MessageCircle },
   { name: "Notifications", href: "/notifications", icon: Bell },
 ];
